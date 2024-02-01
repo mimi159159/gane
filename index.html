@@ -3,26 +3,25 @@
 <head>
   <title>Car Dodge Game 1</title>
   <style>
-    body {
+    body, html {
       margin: 0;
-      overflow: hidden; /* Prevents scrolling on tilt */
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      padding: 0;
+      overflow: hidden; /* Prevent scrolling */
     }
     canvas {
-      max-width: 100%;
-      height: auto; /* Make canvas responsive */
+      display: block; /* Remove extra space below the canvas */
+      background: lightblue; /* Default background */
+      width: 100%;
+      height: 100vh;
     }
     #startGameButton, #startOverButton {
-      position: fixed; /* Fixed position to ensure visibility */
-      bottom: 20px; /* Positioned at the bottom with some margin */
-      left: 50%; /* Center horizontally */
-      transform: translateX(-50%); /* Adjust for center alignment */
-      padding: 10px 20px; /* Larger tap area for touch devices */
-      font-size: 18px; /* Larger font size for better readability */
-      z-index: 10; /* Ensure it's above other elements */
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      font-size: 18px;
+      z-index: 1;
     }
   </style>
 </head>
@@ -34,30 +33,16 @@
   <script>
     var canvas = document.getElementById("carCanvas");
     var ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    adjustCanvasSize();
 
     var carX = canvas.width / 2;
-    var carY = canvas.height - 150; // Adjust carY based on canvas height
+    var carY = canvas.height - 150;
     var carWidth = 100;
     var carHeight = 40;
     var carSpeed = 4;
 
-    var roadY = canvas.height - 100; // Adjust roadY based on canvas height
+    var roadY = canvas.height - 100;
     var roadColor = "gray";
-
-    var people = [];
-    var personWidth = 40;
-    var personHeight = 80;
-    var personSpeed = 2;
-
-    var clouds = [];
-    var cloudRadius = 40;
-    var cloudSpeed = carSpeed;
-
-    var sunRadius = 50;
-    var sunX = canvas.width - 1350;
-    var sunY = 100;
 
     var score = 0;
     var lives = 3;
@@ -67,116 +52,95 @@
     var startGameButton = document.getElementById("startGameButton");
     var startOverButton = document.getElementById("startOverButton");
 
-    startGameButton.onclick = function() {
+    function adjustCanvasSize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function requestDeviceOrientation() {
+      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission()
+          .then(permissionState => {
+            if (permissionState === 'granted') {
+              window.addEventListener('deviceorientation', handleOrientation, true);
+            } else {
+              alert("Device orientation permission not granted");
+            }
+          })
+          .catch(console.error);
+      } else {
+        window.addEventListener('deviceorientation', handleOrientation, true);
+      }
+    }
+
+    startGameButton.addEventListener('click', function() {
       gameStarted = true;
       startGameButton.style.display = "none";
+      requestDeviceOrientation();
       animate();
-    };
+    });
 
-    startOverButton.onclick = function() {
+    startOverButton.addEventListener('click', function() {
       resetGame();
-      startOverButton.style.display = "none";
-      startGameButton.style.display = "block";
-    };
+    });
 
     function resetGame() {
       score = 0;
       lives = 3;
       gameOver = false;
-      people = [];
-      clouds = [];
-      personSpeed = 2;
       carX = canvas.width / 2;
+      startOverButton.style.display = "none";
+      startGameButton.style.display = "block";
+    }
+
+    function handleOrientation(event) {
+      var gamma = event.gamma; // Left to right tilt
+      carSpeed = gamma / 45 * 5;
     }
 
     function drawBackground() {
       ctx.fillStyle = "lightblue";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = "yellow";
-      ctx.beginPath();
-      ctx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = roadColor;
-      ctx.fillRect(0, roadY, canvas.width, canvas.height - roadY);
+      // Additional background elements like the road can be drawn here
     }
 
     function drawCar() {
       ctx.fillStyle = "blue";
-      ctx.fillRect(carX, carY, carWidth, carHeight);
-
-      ctx.fillStyle = "blue";
-      ctx.fillRect(carX + 20, carY - 30, carWidth - 40, 30);
-
-      ctx.fillStyle = "lightblue";
-      ctx.fillRect(carX + 30, carY - 20, 20, 20);
-      ctx.fillRect(carX + 50, carY - 20, 20, 20);
-
-      ctx.fillStyle = "black";
-      ctx.beginPath();
-      ctx.arc(carX + 20, carY + carHeight, 15, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(carX + carWidth - 20, carY + carHeight, 15, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.fillRect(carX - carWidth / 2, carY, carWidth, carHeight); // Center the car on carX
     }
 
-    // Existing functions: createFallingPerson, createCloud, drawFallingPeople, drawPerson, drawClouds, updateScoreAndLives, checkCollisions, displayGameOver
+    function updateGameObjects() {
+      // This function would update game objects like moving obstacles or other elements
+      // For simplicity, it's left empty here
+    }
 
-    document.addEventListener("deviceorientation", handleOrientation, true);
-
-    function handleOrientation(event) {
-      var gamma = event.gamma; // Represents the left to right tilt in degrees, where right is positive
-
-      // Adjust carSpeed based on the gamma value
-      var tiltSpeed = gamma * 0.4; // Adjust this multiplier to control the sensitivity
-
-      // Update car position based on tilt
-      carX += tiltSpeed;
-
-      // Clamp the car's x position to stay within the canvas bounds
-      carX = Math.max(0, Math.min(canvas.width - carWidth, carX));
+    function updateScoreAndLives() {
+      ctx.font = "20px Arial";
+      ctx.fillStyle = "black";
+      ctx.fillText("Score: " + score, 10, 30);
+      ctx.fillText("Lives: " + lives, 10, 60);
     }
 
     function animate() {
-      if (gameStarted && !gameOver) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        drawBackground();
-
-        drawClouds();
-
-        drawFallingPeople();
-
-        drawCar();
-
-        updateScoreAndLives();
-
-        if (Math.random() < 0.005) {
-          createFallingPerson();
-        }
-
-        if (Math.random() < 0.01) {
-          createCloud();
-        }
-
-        requestAnimationFrame(animate);
-      } else if (gameOver) {
-        displayGameOver();
+      if (!gameStarted || gameOver) {
+        return;
       }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      drawBackground();
+      updateGameObjects();
+      drawCar();
+      updateScoreAndLives();
+
+      carX += carSpeed; // Move the car based on the current speed
+      carX = Math.max(carWidth / 2, Math.min(canvas.width - carWidth / 2, carX)); // Prevent car from going out of bounds
+
+      requestAnimationFrame(animate);
     }
 
-    // This replaces the previous keyboard event listener
-    // document.addEventListener("keydown", function(event) {
-    //   if (event.key === "ArrowLeft") {
-    //     carX -= carSpeed;
-    //     cloudSpeed = carSpeed;
-    //   } else if (event.key === "ArrowRight") {
-    //     carX += carSpeed;
-    //     cloudSpeed = carSpeed;
-    //   }
-    // });
+    window.addEventListener('resize', adjustCanvasSize);
   </script>
 </body>
 </html>

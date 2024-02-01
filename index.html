@@ -6,6 +6,23 @@
     body {
       margin: 0;
       overflow: hidden; /* Prevents scrolling on tilt */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    canvas {
+      max-width: 100%;
+      height: auto; /* Make canvas responsive */
+    }
+    #startGameButton, #startOverButton {
+      position: fixed; /* Fixed position to ensure visibility */
+      bottom: 20px; /* Positioned at the bottom with some margin */
+      left: 50%; /* Center horizontally */
+      transform: translateX(-50%); /* Adjust for center alignment */
+      padding: 10px 20px; /* Larger tap area for touch devices */
+      font-size: 18px; /* Larger font size for better readability */
+      z-index: 10; /* Ensure it's above other elements */
     }
   </style>
 </head>

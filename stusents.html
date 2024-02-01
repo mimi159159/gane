@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input id="name" type="text" placeholder="name">
+    <input type="text" id="age" placeholder="age">
+    <button onclick="addStudent()">add</button>
+    <button onclick="showStudents()">show all</button>
+    <div id="students"></div>
+
+    <script>
+        // Initialize an array to store student objects
+        const studentsArray = [];
+
+        // Function to add a new student to the array
+        const addStudent = () => {
+            const name = document.getElementById("name").value;
+            const age = document.getElementById("age").value;
+
+            // Create a new student object and push it to the array
+            const student = { "name": name, "age": age };
+            studentsArray.push(student);
+
+            // Clear the input fields
+            document.getElementById("name").value = '';
+            document.getElementById("age").value = '';
+        };
+
+        // Function to show all students in the array
+        const showStudents = () => {
+            const studentsDiv = document.getElementById("students");
+            studentsDiv.innerHTML = "<ul>";
+
+            studentsArray.forEach(student => {
+                studentsDiv.innerHTML += `<li>Name: ${student.name}, Age: ${student.age} years old <button onclick="del(${student.name},${student.age})">delete</button> <button onclick="upd(${student.name},${student.age})">update</button> </li>`;
+            });
+
+            studentsDiv.innerHTML += "</ul>";
+        };
+
+        const upd = (name,age) => {
+            const name1 = document.getElementById("name").value;
+            const age1 = document.getElementById("age").value;
+            studentsArray["name"][name] = name1
+studentsArray["age"][age] = age1
+
+
+
+        }
+        const del = (name,age) => {
+delete studentsArray["name"] == name
+delete studentsArray["age"] == age
+
+
+        }
+
+
+
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input id="name" type="text" placeholder="name">
+    <input type="text" id="age" placeholder="age">
+    <button onclick="add()">add</button>
+    <button onclick="show()">show all</button>
+    <div id="studens"></div>
+
+
+    <script>
+const dict_stu = {"name":"michal","age":"20"}
+
+ const add = () =>{
+    const name = document.getElementById("name").value
+ const age = document.getElementById("age").value
+ const student = { "name": name, "age": age };
+ dict_stu.push (student)
+ document.getElementById("name").value = '';
+            document.getElementById("age").value = '';
+ }
+
+ const show = () => {
+    const div = document.getElementById("studens")
+    div.innerHTML = "<ul>"
+        dict_stu.forEach(stusent1 => {
+           div.innerHTML += `<li>Name: ${stusent1.name}, Age: ${stusent1.age} years old</li>`;
+        });
+        div.innerHTML += "</ul>";
+ }
+
+
+    </script>
+</body>
+</html> -->

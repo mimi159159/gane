@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Car with Falling People</title>
+</head>
+<body>
+  <canvas id="carCanvas"></canvas>
+  <button id="startGameButton">Start Game</button>
+  <button id="startOverButton" style="display:none;">Start Over</button>
+
+  <script>
+    var canvas = document.getElementById("carCanvas");
+    var ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    var carX = canvas.width / 2;
+    var carY = 550;
+    var carWidth = 100;
+    var carHeight = 40;
+    var carSpeed = 2;
+
+    var roadY = 600;
+    var roadColor = "gray";
+
+    var people = [];
+    var personWidth = 40;
+    var personHeight = 80;
+    var personSpeed = 2;
+
+    var clouds = [];
+    var cloudRadius = 40;
+    var cloudSpeed = carSpeed;
+
+    var sunRadius = 50;
+    var sunX = canvas.width - 1350;
+    var sunY = 100;
+
+    var score = 0;
+    var lives = 3;
+    var gameOver = false;
+    var gameStarted = false;
+    var difficultyIncrease = 0.005;
+
+    var startGameButton = document.getElementById("startGameButton");
+    var startOverButton = document.getElementById("startOverButton");
+
+    startGameButton.onclick = function() {
+      gameStarted = true;
+      startGameButton.style.display = "none";
+      animate();
+    };
+
+    startOverButton.onclick = function() {
+      resetGame();
+      startOverButton.style.display = "none";
+      startGameButton.style.display = "block";
+    };
+
+    function resetGame() {
+      score = 0;
+      lives = 3;
+      gameOver = false;
+      people = [];
+      clouds = [];
+      personSpeed = 2;
+      carX = canvas.width / 2;
+    }
+
+    function drawBackground() {
+      ctx.fillStyle = "lightblue";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "yellow";
+      ctx.beginPath();
+      ctx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = roadColor;
+      ctx.fillRect(0, roadY, canvas.width, canvas.height - roadY);
+    }
+
+    function drawCar() {
+      ctx.fillStyle = "blue";
+      ctx.fillRect(carX, carY, carWidth, carHeight);
+
+      ctx.fillStyle = "blue";
+      ctx.fillRect(carX + 20, carY - 30, carWidth - 40, 30);
+
+      ctx.fillStyle = "lightblue";
+      ctx.fillRect(carX + 30, carY - 20, 20, 20);
+      ctx.fillRect(carX + 50, carY - 20, 20, 20);
+
+      ctx.fillStyle = "black";
+      ctx.beginPath();
+      ctx.arc(carX + 20, carY + carHeight, 15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(carX + carWidth - 20, carY + carHeight, 15, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function createFallingPerson() {
+      var x = Math.random() * canvas.width;
+      var y = -personHeight;
+      var dy = personSpeed;
+
+      people.push({ x, y, dy });
+    }
+
+    function createCloud() {
+      var x = Math.random() * canvas.width;
+      var y = Math.random() * 200;
+      var dx = cloudSpeed;
+
+      clouds.push({ x, y, dx });
+    }
+
+    function drawFallingPeople() {
+      for (var i = 0; i < people.length; i++) {
+        var person = people[i];
+
+        drawPerson(person.x, person.y);
+
+        person.y += person.dy;
+
+        if (checkCollisions(person)) {
+          people.splice(i, 1);
+          i--;
+        }
+      }
+    }
+
+    function drawPerson(x, y) {
+      ctx.beginPath();
+      ctx.arc(x, y - 80, 20, 0, Math.PI * 2);
+      ctx.fillStyle = "black";
+      ctx.fill();
+
+      ctx.moveTo(x, y - 60);
+      ctx.lineTo(x, y);
+      ctx.strokeStyle = "black";
+      ctx.stroke();
+
+      ctx.moveTo(x, y - 70);
+      ctx.lineTo(x - 40, y - 40);
+      ctx.moveTo(x, y - 70);
+      ctx.lineTo(x + 40, y - 40);
+      ctx.stroke();
+
+      ctx.moveTo(x, y);
+      ctx.lineTo(x - 40, y + 40);
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + 40, y + 40);
+      ctx.stroke();
+    }
+
+    function drawClouds() {
+      for (var i = 0; i < clouds.length; i++) {
+        var cloud = clouds[i];
+
+        ctx.fillStyle = "white";
+        for (var j = 0; j < 3; j++) {
+          ctx.beginPath();
+          ctx.arc(cloud.x + j * 20, cloud.y, cloudRadius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        cloud.x += cloud.dx;
+
+        if (cloud.x > canvas.width) {
+          clouds.splice(i, 1);
+          i--;
+        }
+      }
+    }
+
+    function updateScoreAndLives() {
+      ctx.font = "30px Arial";
+      ctx.fillStyle = "black";
+      ctx.fillText("Score: " + score, 10, 50);
+      ctx.fillText("Lives: " + lives, 10, 90);
+    }
+
+    function checkCollisions(person) {
+      if (person.x > carX && person.x < carX + carWidth && person.y + personHeight > carY) {
+        score++;
+        personSpeed += difficultyIncrease;
+        return true;
+      } else if (person.y > roadY) {
+        lives--;
+        if (lives <= 0) {
+          gameOver = true;
+          startOverButton.style.display = "block";
+        }
+        return true;
+      }
+      return false;
+    }
+
+    function displayGameOver() {
+      ctx.font = "60px Arial";
+      ctx.fillStyle = "red";
+      ctx.fillText("Game Over!", canvas.width / 2 - 150, canvas.height / 2);
+    }
+
+    function displayWin() {
+      ctx.font = "60px Arial";
+      ctx.fillStyle = "green";
+      ctx.fillText("You Won!", canvas.width / 2 - 150, canvas.height / 2);
+    }
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "ArrowLeft") {
+        carX -= carSpeed;
+        cloudSpeed = carSpeed;
+      } else if (event.key === "ArrowRight") {
+        carX += carSpeed;
+        cloudSpeed = carSpeed;
+      }
+    });
+
+    function animate() {
+      if (gameStarted && !gameOver) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawBackground();
+
+        drawClouds();
+
+        drawFallingPeople();
+
+        drawCar();
+
+        updateScoreAndLives();
+
+        if (score >= 100) {
+          displayWin();
+          return;
+        }
+
+        if (Math.random() < 0.01) {  // Reduced frequency
+          createFallingPerson();
+        }
+
+        if (Math.random() < 0.01) {
+          createCloud();
+        }
+
+        requestAnimationFrame(animate);
+      } else if (gameOver) {
+        displayGameOver();
+      }
+    }
+  </script>
+</body>
+</html>

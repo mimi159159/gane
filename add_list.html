@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input id="addd" type="text"> <button onclick="addToList()" >add to list</button> <button onclick="showList()">show list</button>
+    <div id="list"></div>
+    <script>
+        let the_list = ["stuff", "on", "list"];
+
+        const addToList = () => {
+            const newItem = document.getElementById("addd").value;
+            the_list.push(newItem);
+            localStorage.setItem("the_list", JSON.stringify(the_list));
+        };
+
+        const showList = () => {
+            const saved_list = JSON.parse(localStorage.getItem("the_list"));
+            const listDiv = document.getElementById("list");
+            listDiv.innerHTML = "<ul>";
+            for (let i = 0; i < saved_list.length; i++) {
+                listDiv.innerHTML += `<li>${saved_list[i]}</li>`;
+            }
+            listDiv.innerHTML += "</ul>";
+        };
+    </script>
+</body>
+</html>
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input id="addd" type="text"> <button onclick="add()" >add to list</button> <button onclick="show()">show list</button>
+<div id="list"></div>
+    <script>
+const the_list = ["stuff","on","list"]
+const add = () =>{
+    const nw = document.getElementById("addd").value
+    the_list.push(nw)
+    
+}
+const show = () => {
+//  the_list = add()
+const div = document.getElementById("list")
+ for (let i = 0; i < the_list.length; i++) {
+   
+    div.innerHTML += `<ul> 
+        <li> ${the_list[i]}
+            </li> </ul>`
+    
+ }
+} -->
+
+    </script>
+</body>
+</html>

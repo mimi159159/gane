@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Red Square Cross</title>
+</head>
+<body>
+  <canvas id="myCanvas" width="200" height="200"></canvas>
+
+  <script>
+    var canvas = document.getElementById("myCanvas");
+    var ctx = canvas.getContext("2d");
+
+    var squareSize = 50;  // Size of the square
+    var speed = 2;       // Speed of movement
+    var x = canvas.width / 2;
+    var y = canvas.height / 2;
+
+    function drawSquare() {
+      // Clear the canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Set the fill style to red
+      ctx.fillStyle = "red";
+
+      // Draw the square at the current position
+      ctx.fillRect(x - squareSize / 2, y - squareSize / 2, squareSize, squareSize);
+    }
+
+    function animate() {
+      // Move the square in a cross pattern
+      x += speed;
+      y += speed;
+
+      // Check if the square has gone out of bounds
+      if (x > canvas.width || y > canvas.height) {
+        x = canvas.width / 2;
+        y = canvas.height / 2;
+      }
+
+      drawSquare(); // Redraw the square
+      requestAnimationFrame(animate); // Repeat the animation
+    }
+
+
+    animate(); // Start the animation loop
+  </script>
+</body>
+</html>

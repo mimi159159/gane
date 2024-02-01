@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Car Dodge Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden; /* Prevents scrolling on tilt */
+    }
+  </style>
+</head>
+<body>
+  <canvas id="carCanvas"></canvas>
+  <button id="startGameButton">Start Game</button>
+  <button id="startOverButton" style="display:none;">Start Over</button>
+
+  <script>
+    var canvas = document.getElementById("carCanvas");
+    var ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    var carX = canvas.width / 2;
+    var carY = canvas.height - 150; // Adjust carY based on canvas height
+    var carWidth = 100;
+    var carHeight = 40;
+    var carSpeed = 4;
+
+    var roadY = canvas.height - 100; // Adjust roadY based on canvas height
+    var roadColor = "gray";
+
+    var people = [];
+    var personWidth = 40;
+    var personHeight = 80;
+    var personSpeed = 2;
+
+    var clouds = [];
+    var cloudRadius = 40;
+    var cloudSpeed = carSpeed;
+
+    var sunRadius = 50;
+    var sunX = canvas.width - 1350;
+    var sunY = 100;
+
+    var score = 0;
+    var lives = 3;
+    var gameOver = false;
+    var gameStarted = false;
+
+    var startGameButton = document.getElementById("startGameButton");
+    var startOverButton = document.getElementById("startOverButton");
+
+    startGameButton.onclick = function() {
+      gameStarted = true;
+      startGameButton.style.display = "none";
+      animate();
+    };
+
+    startOverButton.onclick = function() {
+      resetGame();
+      startOverButton.style.display = "none";
+      startGameButton.style.display = "block";
+    };
+
+    function resetGame() {
+      score = 0;
+      lives = 3;
+      gameOver = false;
+      people = [];
+      clouds = [];
+      personSpeed = 2;
+      carX = canvas.width / 2;
+    }
+
+    function drawBackground() {
+      ctx.fillStyle = "lightblue";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "yellow";
+      ctx.beginPath();
+      ctx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = roadColor;
+      ctx.fillRect(0, roadY, canvas.width, canvas.height - roadY);
+    }
+
+    function drawCar() {
+      ctx.fillStyle = "blue";
+      ctx.fillRect(carX, carY, carWidth, carHeight);
+
+      ctx.fillStyle = "blue";
+      ctx.fillRect(carX + 20, carY - 30, carWidth - 40, 30);
+
+      ctx.fillStyle = "lightblue";
+      ctx.fillRect(carX + 30, carY - 20, 20, 20);
+      ctx.fillRect(carX + 50, carY - 20, 20, 20);
+
+      ctx.fillStyle = "black";
+      ctx.beginPath();
+      ctx.arc(carX + 20, carY + carHeight, 15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(carX + carWidth - 20, carY + carHeight, 15, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Existing functions: createFallingPerson, createCloud, drawFallingPeople, drawPerson, drawClouds, updateScoreAndLives, checkCollisions, displayGameOver
+
+    document.addEventListener("deviceorientation", handleOrientation, true);
+
+    function handleOrientation(event) {
+      var gamma = event.gamma; // Represents the left to right tilt in degrees, where right is positive
+
+      // Adjust carSpeed based on the gamma value
+      var tiltSpeed = gamma * 0.4; // Adjust this multiplier to control the sensitivity
+
+      // Update car position based on tilt
+      carX += tiltSpeed;
+
+      // Clamp the car's x position to stay within the canvas bounds
+      carX = Math.max(0, Math.min(canvas.width - carWidth, carX));
+    }
+
+    function animate() {
+      if (gameStarted && !gameOver) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawBackground();
+
+        drawClouds();
+
+        drawFallingPeople();
+
+        drawCar();
+
+        updateScoreAndLives();
+
+        if (Math.random() < 0.005) {
+          createFallingPerson();
+        }
+
+        if (Math.random() < 0.01) {
+          createCloud();
+        }
+
+        requestAnimationFrame(animate);
+      } else if (gameOver) {
+        displayGameOver();
+      }
+    }
+
+    // This replaces the previous keyboard event listener
+    // document.addEventListener("keydown", function(event) {
+    //   if (event.key === "ArrowLeft") {
+    //     carX -= carSpeed;
+    //     cloudSpeed = carSpeed;
+    //   } else if (event.key === "ArrowRight") {
+    //     carX += carSpeed;
+    //     cloudSpeed = carSpeed;
+    //   }
+    // });
+  </script>
+</body>
+</html>

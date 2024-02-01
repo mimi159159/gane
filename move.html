@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Red Square Full Screen</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* Hide scrollbars */
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="myCanvas"></canvas>
+
+  <script>
+    var canvas = document.getElementById("myCanvas");
+    var ctx = canvas.getContext("2d");
+
+    var squareSize = 50;  // Size of the square
+    var x = window.innerWidth / 2;
+    var y = window.innerHeight / 2;
+
+    // Set canvas size to match window size
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Function to draw the square at the current position
+    function drawSquare() {
+      // Clear the canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Set the fill style to red
+      ctx.fillStyle = "red";
+
+      // Draw the square at the current position
+      ctx.fillRect(x - squareSize / 2, y - squareSize / 2, squareSize, squareSize);
+    }
+
+    // Event listener for keyboard arrow key presses
+    document.addEventListener("keydown", function(event) {
+      var speed = 5;  // Adjust the speed of movement as needed
+
+      // Update the square's position based on the arrow key pressed
+      if (event.key === "ArrowUp") {
+        y -= speed;
+      } else if (event.key === "ArrowDown") {
+        y += speed;
+      } else if (event.key === "ArrowLeft") {
+        x -= speed;
+      } else if (event.key === "ArrowRight") {
+        x += speed;
+      }
+
+      drawSquare(); // Redraw the square
+    });
+
+    // Initial draw of the square
+    drawSquare();
+  </script>
+</body>
+</html>

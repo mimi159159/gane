@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input id="num" type="text"> <button onclick="make()">make</button>
+    <div id="muly_num"></div>
+
+    <script>
+const make = () => {
+    const muly = parseInt(document.getElementById("num").value);
+    const place = document.getElementById("muly_num");
+
+    // Clear the previous content in the container
+    place.innerHTML = '';
+
+    for (let i = 1; i <= muly; i++) {
+        const button = document.createElement("button");
+        button.textContent = `Button ${i}`;
+        place.appendChild(button);
+    }
+}
+    </script>
+</body>
+</html>
